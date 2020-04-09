@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
-import { Shaders, Node, GLSL } from 'gl-react';
+import { Shaders, Node, GLSL as glsl } from 'gl-react';
 import { Surface } from 'gl-react-expo';
 import scanline from './scanline-app.frag';
-import { width, height, clampVec } from '../utils';
+import { width, height } from '../utils';
 import { View, Text } from 'react-native';
 
 const shaders = Shaders.create({
   scanline: {
-    frag: GLSL`${scanline}`
+    frag: glsl`${scanline}`
   }
 });
 
-const PADDING = 5 / width;
+const PADDING = 0;
 
 export const FirstAttempt = () => {
   const rAF = React.useRef<number>();
   const [scan, setScan] = React.useState({x: 0, dir: 1});
-  const [moving, keepMoving] = React.useState(true);
+  const [moving] = React.useState(true);
 
   const time = React.useRef(Date.now());
   const dT = React.useRef(0);
@@ -57,9 +57,8 @@ export const FirstAttempt = () => {
   }, []);
 
     return (
-      <View>
-        <Text>{JSON.stringify(scan, null, 2)}</Text>
-        <Surface style={{width: 300, height: 300}}>
+      <View style={{width: '100%', height: '100%'}}>
+        <Surface style={{width: '100%', height: '100%'}}>
           <Node shader={shaders.scanline} uniforms={{x: scan.x}}/>
         </Surface>
       </View>
