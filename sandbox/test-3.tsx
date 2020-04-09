@@ -1,14 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Dimensions } from 'react-native';
 
-
-export const {width, height} = Dimensions.get('window');
-
-type Coord = {x: number, y: number};
-
-const clamp = (n: number, min: number, max: number): number => Math.min(Math.max(n, min), max);
-const clampVec = ({x, y}: Coord, min: number, max: Coord): Coord => ({x: clamp(x, min, max.x), y: clamp(y, min, max.y)});
+import { width, height, clampVec } from '../utils';
 
 export const Test3 = () => {
   const [coord, setCoord] = React.useState({x: 0, y: 0});
@@ -35,7 +28,7 @@ export const Test3 = () => {
         newCoord.y = newCoord.y - height;
       }
 
-      return clampVec(newCoord, 0, {x: width, y: height});
+      return clampVec(newCoord);
     });
 
     if (moving) {

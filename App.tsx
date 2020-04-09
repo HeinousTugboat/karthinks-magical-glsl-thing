@@ -3,9 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Test1 } from './sandbox/test-1';
 import { Test2 } from './sandbox/test-2';
 import { Test3 } from './sandbox/test-3';
+import { FirstAttempt } from './sandbox/first-attempt';
 
 export default function App() {
-  const Comp = Test3;
+  const Comp = FirstAttempt;
   return (
     <View style={styles.container}>
       <Comp></Comp>

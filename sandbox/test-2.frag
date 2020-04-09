@@ -27,12 +27,16 @@ vec2 coord(in vec2 p) {
 	return p;
 }
 
+void setCoords() {
+  rx = 1.0 / min(u_resolution.x, u_resolution.y);
+  uv = gl_FragCoord.xy / u_resolution.xy;
+  st = coord(gl_FragCoord.xy);
+  mx = coord(u_mouse);
+
+}
 
 void main() {
-	rx = 1.0 / min(u_resolution.x, u_resolution.y);
-	uv = gl_FragCoord.xy / u_resolution.xy;
-	st = coord(gl_FragCoord.xy);
-	mx = coord(u_mouse);
+	setCoords();
 
 	vec3 color = vec3(
 		abs(cos(st.x + mx.x)),
