@@ -5,7 +5,7 @@ import { Test2 } from './sandbox/test-2';
 import { Test3 } from './sandbox/test-3';
 
 export default function App() {
-  const Comp = Test1;
+  const Comp = Test3;
   return (
     <View style={styles.container}>
       <Comp></Comp>

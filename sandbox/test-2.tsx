@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Shaders, Node, GLSL as glsl } from 'gl-react';
+import { Shaders, Node, GLSL } from 'gl-react';
 import { Surface } from 'gl-react-expo';
 import test2 from './test-2.frag';
 
 const shaders = Shaders.create({
   glslCanvasExample: {
-    frag: glsl`${test2}`
+    frag: GLSL`${test2}`
   }
 });
 
