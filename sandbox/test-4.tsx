@@ -1,24 +1,13 @@
-import React, { useState, useEffect, useRef, Ref } from 'react';
+import React, { useState, useEffect, useRef, Ref, useLayoutEffect, RefObject } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Shaders, Node, GLSL } from 'gl-react';
 import { Surface } from 'gl-react-expo';
 import { Camera } from 'expo-camera';
-import test1 from './test-1.frag';
 import { Scanline } from '../components/scanline';
-import imageFragment from '../components/image.frag';
+import { width, height, BreakpointValues } from '../utils';
 
 // https://github.com/gre/gl-react/blob/master/examples/expo-gl-react-camera-effects/src/GLCamera.js
 const shaders = Shaders.create({
-  helloGL: {
-    frag: GLSL`
-precision highp float;
-varying vec2 uv;
-
-void main() {
-  gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0);
-}
-`
-  },
   imageScanline: {
     frag: GLSL`
   precision highp float;
@@ -32,22 +21,11 @@ void main() {
   `
   },
 });
-// export class Test4 extends Component {
-//   render() {
-//     return (
-//       <Surface style={{width: 300, height: 300}}>
-//         <Node shader={shaders.helloGL} />
-//       </Surface>
-//     );
-// // Surface creates the canvas, an area of pixels where you can draw.
-// // Node instanciates a "shader program" with the fragment shader defined above.
-//   }
-// }
 
 export const Test4 = () => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const camera = useRef<Camera>();
+  const [type, setType] = useState(Camera.Constants.Type.front);
+  const camera = useRef<Camera>() as RefObject<Camera>;
   const scanline = useRef<any>();
 
   useEffect(() => {
@@ -63,35 +41,37 @@ export const Test4 = () => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+  const StupidiPhoneHeight = BreakpointValues.isIos ? width * 16 / 10 : height;
+
   return (
-    <View style={{ flex: 1, width: '100%' }}>
-      <Surface style={{ width: 400, height: 533.33 }}>
-        <Scanline speed={200} size={533.33} ref={scanline}>
+    <View style={styles.container}>
+      <Surface style={{ width, height: StupidiPhoneHeight }}>
+        <Scanline
+          maxThreshold={0.15}
+          maxPasses={45}
+          speed={200}
+          size={StupidiPhoneHeight}
+          ref={scanline}
+        >
           <Node
             shader={shaders.imageScanline}
-
-            uniforms={{ src: camera.current }}
+            uniforms={{ src: () => camera.current }}
           >
             <Camera
               style={{
-                width: 400,
-                height: 533.33
+                width,
+                height: StupidiPhoneHeight
               }}
-              ratio="4:3"
+              ratio={'2:1'}
               type={type}
-              ref={(c: Camera) => camera.current = c}
-            >
-
-            </Camera>
+              ref={camera}
+            />
           </Node>
         </Scanline>
       </Surface>
       <View
-        style={{
-          flex: 1,
-          backgroundColor: '#F0F3',
-          flexDirection: 'row',
-        }}>
+        style={styles.buttonBar}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
@@ -122,20 +102,37 @@ export const Test4 = () => {
           <Text style={styles.label}>Stop</Text>
         </TouchableOpacity>
       </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: '#222'
+  },
+  buttonBar: {
+    position: 'absolute',
+    bottom: 16,
+    left: 0,
+    right: 0,
+    flex: 1,
+    backgroundColor: '#0007',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   button: {
     flex: 0.1,
     alignSelf: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#F0F',
-    backgroundColor: '#F0F3',
+    backgroundColor: '#F0F7',
     padding: 4,
     paddingHorizontal: 8,
+    marginHorizontal: 4,
     minWidth: 80,
   },
   label: {

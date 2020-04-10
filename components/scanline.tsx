@@ -8,9 +8,9 @@ const shaders = Shaders.create({
 
     precision highp float;
     varying vec2 uv;
+    uniform sampler2D src;
     uniform float scannerY;
     uniform float passes;
-    uniform sampler2D src;
     uniform float maxPasses;
     uniform float maxThreshold;
 
@@ -20,6 +20,10 @@ const shaders = Shaders.create({
         mix(base.rgb, clamp(blend.rgb, vec3(0, 0, 0), vec3(1, 1, 1)), clamp(blend.a, 0.0, 1.0)),
         1.0
       );
+    }
+
+    bool checkColor(vec3 color, float threshold) {
+      return all(lessThan(color, vec3(threshold)));
     }
 
     void main() {
@@ -38,18 +42,20 @@ const shaders = Shaders.create({
       vec4 completeColor = vec4(0.0, 1.0, 0.0, 0.8);
 
       // Source brightness
-      float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
+      // float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
       float preThreshold = min(passes / maxPasses, maxThreshold);
       float postThreshold = min((passes - 1.0) / maxPasses, maxThreshold);
 
       if (uv.y > scannerY) {
         gl_FragColor = blendColors(srcColor, scannedColor);
 
-        if (srcLuma < preThreshold) {
+        // if (srcLuma < preThreshold) {
+        if (checkColor(srcColor.rgb, preThreshold)) {
           gl_FragColor = completeColor;
         }
       } else {
-        if (srcLuma < postThreshold) {
+        // if (srcLuma < postThreshold) {
+        if (checkColor(srcColor.rgb, postThreshold)) {
           gl_FragColor = completeColor;
         } else {
           gl_FragColor = srcColor;
@@ -63,7 +69,13 @@ const shaders = Shaders.create({
 
 type scanData = {x: number, passes: number, running: boolean};
 
-export const Scanline = forwardRef(({children, speed = 300, size = 300, maxPasses = 20, maxThreshold = 0.4}: {children: any, speed?: number, size?: number, maxPasses?: number, maxThreshold?: number}, ref: Ref<any>) => {
+export const Scanline = forwardRef(({
+  children,
+  speed = 300,
+  size = 300,
+  maxPasses = 20,
+  maxThreshold = 0.4
+}: {children: any, speed?: number, size?: number, maxPasses?: number, maxThreshold?: number}, ref: Ref<any>) => {
   const rAF = React.useRef<number>();
   const [scan, setScan] = React.useState<scanData>({x: 0, passes: 0, running: false});
   const time = React.useRef(Date.now());
@@ -112,7 +124,7 @@ export const Scanline = forwardRef(({children, speed = 300, size = 300, maxPasse
     reset() { setScan({x: 0, passes: 0, running: false}) },
     stop() { setScan({...scan, running: false}) },
     get scan() { return {...scan}}
-  }));
+  }), [scan]);
 
   return <Node
     shader={shaders.scanline}

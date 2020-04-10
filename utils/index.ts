@@ -1,6 +1,32 @@
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 export const {width, height} = Dimensions.get('window');
+
+export const Breakpoints = {
+  isSmall: 'isSmall',
+  isLarge: 'isLarge',
+  isExtraLarge: 'isExtraLarge',
+  isAndroid: 'isAndroid',
+  isIos: 'isIos',
+  isPad: 'isPad',
+  isTVOS: 'isTVOS',
+  isIphoneX: 'isIphoneX',
+  minWidthSM: 'minWidthSM',
+  minWidthMD: 'minWidthMD',
+  minWidthLG: 'minWidthLG',
+  minWidthXL: 'minWidthXL',
+  minHeightSM: 'minHeightSM',
+  minHeightMD: 'minHeightMD',
+  minHeightLG: 'minHeightLG',
+  minHeightXL: 'minHeightXL',
+};
+
+
+
+export const BreakpointValues = {
+  [Breakpoints.isAndroid]: Platform.OS === 'android',
+  [Breakpoints.isIos]: Platform.OS === 'ios',
+};
 
 export type Coord = {x: number, y: number};
 

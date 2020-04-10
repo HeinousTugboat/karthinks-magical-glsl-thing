@@ -1,9 +1,9 @@
 
     precision highp float;
     varying vec2 uv;
+    uniform sampler2D src;
     uniform float scannerY;
     uniform float passes;
-    uniform sampler2D src;
     uniform float maxPasses;
     uniform float maxThreshold;
 
@@ -13,6 +13,10 @@
         mix(base.rgb, clamp(blend.rgb, vec3(0, 0, 0), vec3(1, 1, 1)), clamp(blend.a, 0.0, 1.0)),
         1.0
       );
+    }
+
+    bool checkColor(vec3 color, float threshold) {
+      return all(lessThan(color, vec3(threshold)));
     }
 
     void main() {
@@ -31,18 +35,20 @@
       vec4 completeColor = vec4(0.0, 1.0, 0.0, 0.8);
 
       // Source brightness
-      float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
+      // float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
       float preThreshold = min(passes / maxPasses, maxThreshold);
       float postThreshold = min((passes - 1.0) / maxPasses, maxThreshold);
 
       if (uv.y > scannerY) {
         gl_FragColor = blendColors(srcColor, scannedColor);
 
-        if (srcLuma < preThreshold) {
+        // if (srcLuma < preThreshold) {
+        if (checkColor(srcColor.rgb, preThreshold)) {
           gl_FragColor = completeColor;
         }
       } else {
-        if (srcLuma < postThreshold) {
+        // if (srcLuma < postThreshold) {
+        if (checkColor(srcColor.rgb, postThreshold)) {
           gl_FragColor = completeColor;
         } else {
           gl_FragColor = srcColor;
