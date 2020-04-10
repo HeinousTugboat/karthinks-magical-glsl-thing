@@ -1,3 +1,4 @@
+
 precision highp float;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
@@ -35,10 +36,11 @@ void setCoords() {
 
 }
 
-
+/** End Extension stuff.. **/
+precision highp float;
+// varying vec2 uv;
 
 void main() {
-  setCoords();
-
+	setCoords();
   gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0);
 }

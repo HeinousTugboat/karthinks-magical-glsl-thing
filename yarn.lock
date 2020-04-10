@@ -2319,6 +2319,14 @@ expo-asset@~8.1.3:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
+expo-camera@~8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-8.2.0.tgz#9c849f0dc409e1fe6ee886f479e0ee0050b6d386"
+  integrity sha512-wGVqQVVR4YCkHuI7u+qloI1p2UbYwpU8hs0IEM+1Th4JQekAPUEfOmJI6ZHGj36El8f87ghRed2MXzOssn4hHg==
+  dependencies:
+    lodash "^4.6.0"
+    prop-types "^15.6.0"
+
 expo-constants@~9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-9.0.0.tgz#35c600079ee91d38fe4f56375caae6e90f122fdd"
@@ -5431,6 +5439,13 @@ weakmap-shim@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/weakmap-shim/-/weakmap-shim-1.1.1.tgz#d65afd784109b2166e00ff571c33150ec2a40b49"
   integrity sha1-1lr9eEEJshZuAP9XHDMVDsKkC0k=
+
+webgltexture-loader-expo-camera@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/webgltexture-loader-expo-camera/-/webgltexture-loader-expo-camera-1.0.0.tgz#345a2ee707b72effe2f5e7e0169c6835154a9509"
+  integrity sha512-vQFK8OCeaWSduBG3NpC3qSrt24mZ6MsRCJHvcYdWDmJ11damodi64za+JN8YQtyZX42aYl9bX9OMlyhP3ZCkng==
+  dependencies:
+    webgltexture-loader "^1.0.0"
 
 webgltexture-loader-expo@1.0.0:
   version "1.0.0"
