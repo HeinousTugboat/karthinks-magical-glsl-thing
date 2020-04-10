@@ -4,9 +4,10 @@ import { Test1 } from './sandbox/test-1';
 import { Test2 } from './sandbox/test-2';
 import { Test3 } from './sandbox/test-3';
 import { FirstAttempt } from './sandbox/first-attempt';
+import { TestImage } from './sandbox/test-image';
 
 export default function App() {
-  const Comp = FirstAttempt;
+  const Comp = TestImage;
   return (
     <View style={styles.container}>
       <Comp></Comp>
