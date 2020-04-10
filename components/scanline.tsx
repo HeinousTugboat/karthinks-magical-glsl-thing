@@ -10,7 +10,7 @@ const shaders = Shaders.create({
 
 const PADDING = 0;
 
-export const Scanline = ({children, duration = 1, speed = 1}: {children: any, duration?: number, speed?: number}) => {
+export const Scanline = ({children, speed = 300, size = 300}: {children: any, speed?: number, size?: number}) => {
   const rAF = React.useRef<number>();
   const [scan, setScan] = React.useState({x: 0, dir: 1});
 
@@ -23,7 +23,7 @@ export const Scanline = ({children, duration = 1, speed = 1}: {children: any, du
 
     setScan(({x, dir}) => {
       const newScan = {
-        x: x + dir * speed / (duration * dT.current),
+        x: x + dir * (dT.current / 1000) * (speed / size),
         dir
       }
 
