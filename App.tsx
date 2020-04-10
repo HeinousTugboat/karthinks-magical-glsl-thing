@@ -9,7 +9,7 @@ import { TestImage } from './sandbox/test-image';
 import 'webgltexture-loader-expo-camera';
 
 export default function App() {
-  const Comp = TestImage;
+  const Comp = Test4;
   return (
     <View style={styles.container}>
       <Comp></Comp>
