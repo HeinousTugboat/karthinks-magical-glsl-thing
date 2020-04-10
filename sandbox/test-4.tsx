@@ -6,7 +6,7 @@ import { Camera } from 'expo-camera';
 import test1 from './test-1.frag';
 import { Scanline } from '../components/scanline';
 import imageFragment from '../components/image.frag';
-
+// https://github.com/gre/gl-react/blob/master/examples/expo-gl-react-camera-effects/src/GLCamera.js
 const shaders = Shaders.create({
   helloGL: {
     frag: GLSL`

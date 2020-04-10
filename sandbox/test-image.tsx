@@ -10,7 +10,7 @@ export const TestImage = () => {
     return (
       <View style={{width: 300, height: 300}}>
         <Surface style={{width: 300, height: 300}}>
-          <Scanline speed={100} size={300}>
+          <Scanline speed={300} size={300}>
             <Image src={sourceImage}/>
           </Scanline>
         </Surface>
