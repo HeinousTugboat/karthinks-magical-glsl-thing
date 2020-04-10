@@ -3,6 +3,13 @@ varying vec2 uv;
 uniform float x;
 uniform sampler2D src;
 
+vec4 blendColors(vec4 base, vec4 blend) {
+  return vec4(
+    mix(base.rgb, blend.rgb, blend.a),
+    1.0
+  );
+}
+
 void main() {
   vec4 scannerColor = vec4(
     0.0,
@@ -13,5 +20,5 @@ void main() {
 
   vec4 srcColor = texture2D(src, uv);
 
-  gl_FragColor = scannerColor * srcColor;
+  gl_FragColor = blendColors(srcColor, scannerColor);
 }
