@@ -1,9 +1,11 @@
-precision highp float;
-varying vec2 uv;
-uniform float offset;
-uniform float octave;
-uniform sampler2D src;
-uniform vec4 color;
+    precision highp float;
+    varying vec2 uv;
+    uniform sampler2D src;
+    uniform float scannerY;
+    uniform float passes;
+    uniform float maxPasses;
+    uniform float maxThreshold;
+    uniform float time;
 
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 //
@@ -111,9 +113,64 @@ float snoise(vec3 v)
   }
 
 
-void main() {
-  float noise = snoise(vec3(gl_FragCoord.yx/octave, offset)) * 0.5 + 0.5;
-  vec4 srcColor = texture2D(src, uv);
+    vec4 blendColors(vec4 base, vec4 blend, float pct) {
+      return vec4(
+        mix(base.rgb, clamp(blend.rgb, vec3(0, 0, 0), vec3(1, 1, 1)), clamp(pct, 0.0, 1.0)),
+        1.0
+      );
+    }
 
-  gl_FragColor = mix(srcColor, vec4(color.rgb, 1.0), clamp(noise - color.a, 0., 1.));
-}
+    // Blend two colors based on blend's alpha
+    vec4 blendColors(vec4 base, vec4 blend) {
+      return blendColors(base, blend, blend.a);
+    }
+
+    bool checkColor(vec3 color, float threshold) {
+      return all(lessThan(color, vec3(threshold)));
+    }
+
+    void main() {
+      float octave = 8.;
+
+      float noise = snoise(vec3(gl_FragCoord.xy/octave, time)) * 0.5 + 0.5;
+      // Scanner bar's color with alpha drop off
+      vec4 scannerColor = vec4(
+        0.4 + pow(0.2 - distance(scannerY, uv.y), 512.0),
+        0.8 + pow(0.2 - distance(scannerY, uv.y), 512.0),
+        0.0,
+        // 0.1
+        0.0 + pow(1.0 - distance(scannerY, uv.y), 64.0)
+      );
+
+      // Source color
+      vec4 srcColor = texture2D(src, uv);
+      vec4 srcOut = blendColors(srcColor, scannerColor);
+
+      vec4 completeColor = blendColors(srcOut, vec4(0.2, 1.0, 0.0, 1.0), clamp(noise, 0.5, 1.0));
+
+      // Source brightness
+      // float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
+      float preThreshold = min(passes / maxPasses, maxThreshold);
+      float postThreshold = min((passes - 1.0) / maxPasses, maxThreshold);
+
+      if (uv.y > scannerY) {
+        gl_FragColor = srcOut;
+        // gl_FragColor = blendColors(srcOut, scannedColor);
+
+        // if (srcLuma < preThreshold) {
+        if (checkColor(srcColor.rgb, preThreshold)) {
+          gl_FragColor = completeColor;
+        }
+      } else {
+        // if (srcLuma < postThreshold) {
+        if (checkColor(srcColor.rgb, postThreshold)) {
+          gl_FragColor = completeColor;
+        } else {
+          gl_FragColor = srcOut;
+        }
+      }
+
+      // if (distance(scannerY, uv.y) < 0.2) {
+      //   gl_FragColor = scannerColor;
+      // }
+    }

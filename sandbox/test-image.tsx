@@ -1,7 +1,7 @@
 import React from 'react';
 import { Surface } from 'gl-react-expo';
 import { View } from 'react-native';
-import { Scanline, ScanlineRef } from '../components/scanline';
+import { ScanlineStatic as Scanline, ScanlineRef } from '../components/scanline-static';
 import { Image } from '../components/image';
 import { ButtonBar } from '../components/button-bar';
 
