@@ -3,8 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Shaders, Node, GLSL } from 'gl-react';
 import { Surface } from 'gl-react-expo';
 import { Camera } from 'expo-camera';
-import { Scanline } from '../components/scanline';
+import { Scanline, ScanlineRef } from '../components/scanline';
 import { width, height, BreakpointValues } from '../utils';
+import { ButtonBar } from '../components/button-bar';
 
 // https://github.com/gre/gl-react/blob/master/examples/expo-gl-react-camera-effects/src/GLCamera.js
 const shaders = Shaders.create({
@@ -25,8 +26,9 @@ const shaders = Shaders.create({
 export const Test4 = () => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [type, setType] = useState(Camera.Constants.Type.front);
-  const camera = useRef<Camera>() as RefObject<Camera>;
-  const scanline = useRef<any>();
+  // How To Type useRef: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065
+  const camera = useRef<Camera>(null);
+  const scanline = useRef<ScanlineRef>(null);
 
   useEffect(() => {
     (async () => {
@@ -70,38 +72,18 @@ export const Test4 = () => {
           </Node>
         </Scanline>
       </Surface>
-      <View
-        style={styles.buttonBar}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            setType(
-              type === Camera.Constants.Type.back
-                ? Camera.Constants.Type.front
-                : Camera.Constants.Type.back
-            );
-          }}>
-          <Text style={styles.label}>Flip</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => scanline.current.reset()}
-        >
-          <Text style={styles.label}>Reset</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => scanline.current.start()}
-        >
-          <Text style={styles.label}>Start</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => scanline.current.stop()}
-        >
-          <Text style={styles.label}>Stop</Text>
-        </TouchableOpacity>
-      </View>
+      <ButtonBar
+        onFlip={() => {
+          setType(
+            type === Camera.Constants.Type.back
+              ? Camera.Constants.Type.front
+              : Camera.Constants.Type.back
+          );
+        }}
+        onStart={() => scanline.current?.start()}
+        onStop={() => scanline.current?.stop()}
+        onReset={() => scanline.current?.reset()}
+      />
 
     </View>
   );
@@ -113,31 +95,4 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#222'
   },
-  buttonBar: {
-    position: 'absolute',
-    bottom: 16,
-    left: 0,
-    right: 0,
-    flex: 1,
-    backgroundColor: '#0007',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  button: {
-    flex: 0.1,
-    alignSelf: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F0F',
-    backgroundColor: '#F0F7',
-    padding: 4,
-    paddingHorizontal: 8,
-    marginHorizontal: 4,
-    minWidth: 80,
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 10,
-    color: 'white'
-  }
 });

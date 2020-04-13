@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Test1 } from './sandbox/test-1';
-import { Test2 } from './sandbox/test-2';
-import { Test3 } from './sandbox/test-3';
-import { Test4 } from './sandbox/test-4';
+import { Test1 } from './sandbox/test-1'; // Basic Shader Test
+import { Test2 } from './sandbox/test-2'; // Uniforms Test
+import { Test3 } from './sandbox/test-3'; // Scanner Test
+import { Test4 } from './sandbox/test-4'; // Camera Test
 import { FirstAttempt } from './sandbox/first-attempt';
-import { TestImage } from './sandbox/test-image';
+import { TestImage } from './sandbox/test-image'; // Scanner + Image
+import { TestImageStatic } from './sandbox/test-image-static'; // Scanner + Image + Static?
 import 'webgltexture-loader-expo-camera';
 
 export default function App() {

@@ -67,7 +67,7 @@ const shaders = Shaders.create({
   }
 });
 
-type scanData = {x: number, passes: number, running: boolean};
+type ScanData = {x: number, passes: number, running: boolean};
 
 export const Scanline = forwardRef(({
   children,
@@ -75,9 +75,9 @@ export const Scanline = forwardRef(({
   size = 300,
   maxPasses = 20,
   maxThreshold = 0.4
-}: {children: any, speed?: number, size?: number, maxPasses?: number, maxThreshold?: number}, ref: Ref<any>) => {
+}: {children: any, speed?: number, size?: number, maxPasses?: number, maxThreshold?: number}, ref: Ref<ScanlineRef>) => {
   const rAF = React.useRef<number>();
-  const [scan, setScan] = React.useState<scanData>({x: 0, passes: 0, running: false});
+  const [scan, setScan] = React.useState<ScanData>({x: 0, passes: 0, running: false});
   const time = React.useRef(Date.now());
   const dT = React.useRef(0);
 
@@ -85,11 +85,11 @@ export const Scanline = forwardRef(({
     dT.current = tick - time.current;
     time.current = tick;
 
-    setScan(({running, x, passes}: scanData) => {
+    setScan(({running, x, passes}: ScanData) => {
       if (!running) {
         return {running, x, passes};
       }
-      const newScan: scanData = {
+      const newScan: ScanData = {
         x: x - (dT.current / 1000) * (speed / size),
         passes,
         running
@@ -131,3 +131,10 @@ export const Scanline = forwardRef(({
     uniforms={{scannerY: scan.x, passes: scan.passes, src: children, maxPasses, maxThreshold}}
   />;
 });
+
+export interface ScanlineRef {
+  start(): void;
+  reset(): void;
+  stop(): void;
+  scan: ScanData;
+}
