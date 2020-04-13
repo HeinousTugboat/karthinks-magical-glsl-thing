@@ -11,14 +11,14 @@ import { ButtonBar } from '../components/button-bar';
 const shaders = Shaders.create({
   imageScanline: {
     frag: GLSL`
-  precision highp float;
-  varying vec2 uv;
-  uniform sampler2D src;
+      precision highp float;
+      varying vec2 uv;
+      uniform sampler2D src;
 
-  void main() {
-    // Insert color transforms here
-    gl_FragColor = texture2D(src, vec2(1.0 - uv.x, 1.0 - uv.y));
-  }
+      void main() {
+        // Insert color transforms here
+        gl_FragColor = texture2D(src, vec2(1.0 - uv.x, 1.0 - uv.y));
+      }
   `
   },
 });

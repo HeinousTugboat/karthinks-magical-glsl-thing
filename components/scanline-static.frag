@@ -42,11 +42,11 @@ float snoise(vec3 v)
   const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
   const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
 
-// First corner
+  // First corner
   vec3 i  = floor(v + dot(v, C.yyy) );
   vec3 x0 =   v - i + dot(i, C.xxx) ;
 
-// Other corners
+  // Other corners
   vec3 g = step(x0.yzx, x0.xyz);
   vec3 l = 1.0 - g;
   vec3 i1 = min( g.xyz, l.zxy );
@@ -60,15 +60,15 @@ float snoise(vec3 v)
   vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
   vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
 
-// Permutations
+  // Permutations
   i = mod289(i);
   vec4 p = permute( permute( permute(
              i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
            + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
            + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
 
-// Gradients: 7x7 points over a square, mapped onto an octahedron.
-// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+  // Gradients: 7x7 points over a square, mapped onto an octahedron.
+  // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
   float n_ = 0.142857142857; // 1.0/7.0
   vec3  ns = n_ * D.wyz - D.xzx;
 
@@ -98,79 +98,70 @@ float snoise(vec3 v)
   vec3 p2 = vec3(a1.xy,h.z);
   vec3 p3 = vec3(a1.zw,h.w);
 
-//Normalise gradients
+  //Normalise gradients
   vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
   p0 *= norm.x;
   p1 *= norm.y;
   p2 *= norm.z;
   p3 *= norm.w;
 
-// Mix final noise value
+  // Mix final noise value
   vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
   m = m * m;
   return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
                                 dot(p2,x2), dot(p3,x3) ) );
+}
+
+
+vec4 blendColors(vec4 base, vec4 blend, float pct) {
+  return vec4(
+    mix(base.rgb, clamp(blend.rgb, vec3(0, 0, 0), vec3(1, 1, 1)), clamp(pct, 0.0, 1.0)),
+    1.0
+  );
+}
+
+// Blend two colors based on blend's alpha
+vec4 blendColors(vec4 base, vec4 blend) {
+  return blendColors(base, blend, blend.a);
+}
+
+bool checkColor(vec3 color, float threshold) {
+  return all(lessThan(color, vec3(threshold)));
+}
+
+void main() {
+  float octave = 8.;
+
+  float noise = snoise(vec3(gl_FragCoord.xy/octave, time)) * 0.5 + 0.5;
+
+  // Scanner bar's color with alpha drop off
+  vec4 scannerColor = vec4(
+    0.4 + pow(0.2 - distance(scannerY, uv.y), 512.0),
+    0.8 + pow(0.2 - distance(scannerY, uv.y), 512.0),
+    0.0,
+    0.0 + pow(1.0 - distance(scannerY, uv.y), 64.0)
+  );
+
+  // Source color
+  vec4 srcColor = texture2D(src, uv);
+  vec4 srcOut = blendColors(srcColor, scannerColor);
+
+  vec4 completeColor = blendColors(srcOut, vec4(0.2, 1.0, 0.0, 1.0), clamp(noise, 0.5, 1.0));
+
+  float preThreshold = min(passes / maxPasses, maxThreshold);
+  float postThreshold = min((passes - 1.0) / maxPasses, maxThreshold);
+
+  if (uv.y > scannerY) {
+    gl_FragColor = srcOut;
+
+    if (checkColor(srcColor.rgb, preThreshold)) {
+      gl_FragColor = completeColor;
+    }
+  } else {
+    if (checkColor(srcColor.rgb, postThreshold)) {
+      gl_FragColor = completeColor;
+    } else {
+      gl_FragColor = srcOut;
+    }
   }
-
-
-    vec4 blendColors(vec4 base, vec4 blend, float pct) {
-      return vec4(
-        mix(base.rgb, clamp(blend.rgb, vec3(0, 0, 0), vec3(1, 1, 1)), clamp(pct, 0.0, 1.0)),
-        1.0
-      );
-    }
-
-    // Blend two colors based on blend's alpha
-    vec4 blendColors(vec4 base, vec4 blend) {
-      return blendColors(base, blend, blend.a);
-    }
-
-    bool checkColor(vec3 color, float threshold) {
-      return all(lessThan(color, vec3(threshold)));
-    }
-
-    void main() {
-      float octave = 8.;
-
-      float noise = snoise(vec3(gl_FragCoord.xy/octave, time)) * 0.5 + 0.5;
-      // Scanner bar's color with alpha drop off
-      vec4 scannerColor = vec4(
-        0.4 + pow(0.2 - distance(scannerY, uv.y), 512.0),
-        0.8 + pow(0.2 - distance(scannerY, uv.y), 512.0),
-        0.0,
-        // 0.1
-        0.0 + pow(1.0 - distance(scannerY, uv.y), 64.0)
-      );
-
-      // Source color
-      vec4 srcColor = texture2D(src, uv);
-      vec4 srcOut = blendColors(srcColor, scannerColor);
-
-      vec4 completeColor = blendColors(srcOut, vec4(0.2, 1.0, 0.0, 1.0), clamp(noise, 0.5, 1.0));
-
-      // Source brightness
-      // float srcLuma = dot(srcColor.rgb, vec3(0.299, 0.587, 0.114));
-      float preThreshold = min(passes / maxPasses, maxThreshold);
-      float postThreshold = min((passes - 1.0) / maxPasses, maxThreshold);
-
-      if (uv.y > scannerY) {
-        gl_FragColor = srcOut;
-        // gl_FragColor = blendColors(srcOut, scannedColor);
-
-        // if (srcLuma < preThreshold) {
-        if (checkColor(srcColor.rgb, preThreshold)) {
-          gl_FragColor = completeColor;
-        }
-      } else {
-        // if (srcLuma < postThreshold) {
-        if (checkColor(srcColor.rgb, postThreshold)) {
-          gl_FragColor = completeColor;
-        } else {
-          gl_FragColor = srcOut;
-        }
-      }
-
-      // if (distance(scannerY, uv.y) < 0.2) {
-      //   gl_FragColor = scannerColor;
-      // }
-    }
+}

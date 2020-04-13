@@ -48,9 +48,9 @@ export const Test5 = () => {
 
   return (
     <Surface style={{ width: '100%', height: '100%' }}>
-      <Static offset={coord.y} octave={32} color={[0, 1, 0]}>
-      <Static offset={coord.y} octave={16} color={[1, 0.5, 0.5]}>
-      <Static offset={coord.y} octave={8} color={[0.5, 0.5, 1]}>
+      <Static offset={coord.y} octave={32}>
+      <Static offset={coord.y} octave={16}>
+      <Static offset={coord.y} octave={8}>
         <Node shader={shaders.blank}/>
         </Static>
         </Static>
