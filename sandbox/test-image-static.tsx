@@ -7,7 +7,7 @@ import { ButtonBar } from '../components/button-bar';
 
 const sourceImage = require('assets/test-image.png');
 
-export const TestImage = () => {
+export const TestImageStatic = () => {
   const scanline = React.useRef<ScanlineRef>(null);
 
   return (
