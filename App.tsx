@@ -12,7 +12,7 @@ import { TestImageStatic } from './sandbox/test-image-static'; // Scanner + Imag
 import 'webgltexture-loader-expo-camera';
 
 export default function App() {
-  const Comp = Test6;
+  const Comp = TestImageStatic;
   return (
     <View style={styles.container}>
       <Comp></Comp>

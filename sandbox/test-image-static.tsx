@@ -1,10 +1,9 @@
 import React from 'react';
 import { Surface } from 'gl-react-expo';
 import { View } from 'react-native';
-import { Scanline, ScanlineRef } from '../components/scanline';
+import { ScanlineStatic as Scanline, ScanlineRef } from '../components/scanline-static';
 import { Image } from '../components/image';
 import { ButtonBar } from '../components/button-bar';
-import { Static } from '../components/static';
 
 const sourceImage = require('assets/test-image.png');
 
@@ -15,14 +14,11 @@ export const TestImageStatic = () => {
     <>
       <View style={{ width: 300, height: 300 }}>
         <Surface style={{ width: 300, height: 300 }}>
-          <Scanline speed={300} size={300} ref={scanline}>
-            <Static offset={1} octave={8} color={[0, 0.5, 0, 0.5]}>
-              {/* <Static offset={1} octave={16} color={[1, 0.5, 0.5, 0.25]}> */}
-                {/* <Static offset={1} octave={8} color={[0.5, 0.5, 1, 0.25]}> */}
-                  <Image src={sourceImage} />
-                </Static>
-              {/* </Static> */}
-            {/* </Static> */}
+          <Scanline maxThreshold={0.9}
+            maxPasses={5}
+            speed={200}
+            ref={scanline}>
+              <Image src={sourceImage} />
           </Scanline>
         </Surface>
       </View>
